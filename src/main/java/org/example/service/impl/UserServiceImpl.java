@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.dao.UserMapper;
 import org.example.entity.entity.User;
 import org.example.service.UserService;
-import org.example.util.JwtUtil;
+import org.example.utils.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

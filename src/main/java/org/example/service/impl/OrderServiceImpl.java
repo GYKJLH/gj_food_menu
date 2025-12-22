@@ -11,7 +11,7 @@ import org.example.entity.entity.Order;
 import org.example.entity.entity.User;
 import org.example.entity.vo.MenuForOrderVO;
 import org.example.service.OrderService;
-import org.example.util.JwtUtil;
+import org.example.utils.JwtUtil;
 import org.example.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

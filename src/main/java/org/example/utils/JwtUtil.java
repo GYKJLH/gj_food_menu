@@ -1,4 +1,4 @@
-package org.example.util;
+package org.example.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

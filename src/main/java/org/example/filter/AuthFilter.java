@@ -2,7 +2,7 @@ package org.example.filter;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.util.JwtUtil;
+import org.example.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.*;
@@ -35,7 +35,7 @@ public class AuthFilter implements Filter {
 
         // 放行登录页、静态资源、登录接口
         if (uri.endsWith("login.html") || uri.startsWith("/noToken") || uri.startsWith("/static") || uri.endsWith("index.html")
-        || uri.contains("/file") || uri.endsWith("order.html") || uri.endsWith("order-mobile.html") || uri.startsWith("/order")
+        || uri.contains("/file") || uri.endsWith("order-index.html") || uri.endsWith("order-mobile.html") || uri.startsWith("/order")
         ) {
             chain.doFilter(request, response);
             return;
