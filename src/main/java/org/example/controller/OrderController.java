@@ -31,7 +31,7 @@ public class OrderController {
     }
 
     @GetMapping("/listMenu")
-    public ResponseEntity<List<MenuForOrderVO>> list(OrderDTO orderDTO) {
+    public ResponseEntity<Response<List<MenuForOrderVO>>> list(OrderDTO orderDTO) {
         return ResponseEntity.ok(orderService.listMenu(orderDTO));
     }
 

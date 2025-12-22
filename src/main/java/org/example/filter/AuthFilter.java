@@ -28,14 +28,15 @@ public class AuthFilter implements Filter {
 
         if ("/".equals(uri)) {
             String url = externalUrl + "/index.html";
-            log.info("跳转地址:"+url);
+            log.info("跳转地址:" + url);
             res.sendRedirect(url);
             return;
         }
 
         // 放行登录页、静态资源、登录接口
-        if (uri.endsWith("login.html") || uri.startsWith("/noToken") || uri.startsWith("/static") || uri.endsWith("index.html")
-        || uri.contains("/file") || uri.endsWith("order-index.html") || uri.endsWith("order-mobile.html") || uri.startsWith("/order")
+        if (uri.endsWith("login.html") || uri.startsWith("/static") || uri.endsWith("index.html")
+                || uri.contains("/file") || uri.endsWith("order-index.html") || uri.endsWith("order-mobile.html")
+                || uri.contains("/noToken")
         ) {
             chain.doFilter(request, response);
             return;

@@ -13,6 +13,6 @@ public interface OrderService {
 
     Response login(UserDTO userDTO);
 
-    List<MenuForOrderVO> listMenu(OrderDTO orderDTO);
+    Response<List<MenuForOrderVO>> listMenu(OrderDTO orderDTO);
 
 }
