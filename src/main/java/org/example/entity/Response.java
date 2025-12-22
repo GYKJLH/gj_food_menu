@@ -3,7 +3,7 @@ package org.example.entity;
 import lombok.Data;
 
 @Data
-public class Response {
+public class Response<T> {
 
     private Integer code;
 
@@ -22,4 +22,28 @@ public class Response {
         this.message = message;
         this.data = data;
     }
+
+    public static <T> Response<T> success(T data) {
+        Response<T> r = new Response<>();
+        r.code = 200;
+        r.data = data;
+        r.message = "success";
+        return r;
+    }
+
+    public static <T> Response<T> success(T data, String message) {
+        Response<T> r = new Response<>();
+        r.code = 200;
+        r.data = data;
+        r.message = message;
+        return r;
+    }
+
+    public static <T> Response<T> fail(String message) {
+        Response<T> r = new Response<>();
+        r.code = 400;
+        r.message = message;
+        return r;
+    }
+
 }

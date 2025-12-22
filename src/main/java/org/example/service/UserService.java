@@ -1,9 +1,6 @@
 package org.example.service;
 
-import org.example.entity.Food;
-import org.example.entity.FoodDTO;
-import org.example.entity.User;
-import org.springframework.stereotype.Service;
+import org.example.entity.entity.User;
 
 import java.util.Map;
 

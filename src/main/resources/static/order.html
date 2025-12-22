@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>在线点餐</title>
+
+    <!-- Element UI 样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: #f2f3f5;
+        }
+
+        .header {
+            height: 60px;
+            background: #409eff;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 120px);
+        }
+
+        .menu-left {
+            width: 200px;
+            background: #fff;
+            border-right: 1px solid #ebeef5;
+        }
+
+        .menu-right {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .food-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .price {
+            color: #f56c6c;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .count-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .footer {
+            height: 60px;
+            background: #fff;
+            border-top: 1px solid #ebeef5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="header">
+    <div>🍽 自助点餐</div>
+    <div>桌号：A01</div>
+</div>
+
+<div class="container">
+
+    <!-- 左侧分类 -->
+    <div class="menu-left">
+        <ul class="el-menu el-menu-vertical">
+            <li class="el-menu-item is-active" onclick="changeCategory('热菜')">热菜</li>
+            <li class="el-menu-item" onclick="changeCategory('凉菜')">凉菜</li>
+            <li class="el-menu-item" onclick="changeCategory('主食')">主食</li>
+            <li class="el-menu-item" onclick="changeCategory('饮料')">饮料</li>
+        </ul>
+    </div>
+
+    <!-- 右侧菜品 -->
+    <div class="menu-right">
+        <div class="menu-grid" id="menuList"></div>
+    </div>
+</div>
+
+<!-- 底部购物车 -->
+<div class="footer">
+    <div id="cartInfo">🛒 已选 0 份 ｜ 合计 ¥0</div>
+    <button class="el-button el-button--danger" onclick="submitOrder()">去结算</button>
+</div>
+
+<script>
+    // ====== 菜单数据（以后换成后端接口）======
+    const menuData = [
+        {
+            id: 1,
+            name: "宫保鸡丁",
+            price: 28,
+            category: "热菜",
+            desc: "经典川菜，微辣",
+            img: "https://img2.baidu.com/it/u=3016808817,1812518289&fm=253"
+        },
+        {
+            id: 2,
+            name: "鱼香肉丝",
+            price: 26,
+            category: "热菜",
+            desc: "酸甜可口",
+            img: "https://img0.baidu.com/it/u=2514208056,3492410130&fm=253"
+        },
+        {
+            id: 3,
+            name: "凉拌黄瓜",
+            price: 12,
+            category: "凉菜",
+            desc: "清爽解腻",
+            img: "https://img2.baidu.com/it/u=2001340050,1087884141&fm=253"
+        },
+        {
+            id: 4,
+            name: "米饭",
+            price: 3,
+            category: "主食",
+            desc: "香软可口",
+            img: "https://img1.baidu.com/it/u=3349841931,3508846982&fm=253"
+        }
+    ];
+
+    let currentCategory = "热菜";
+    let cart = {};
+
+    function renderMenu() {
+        const list = document.getElementById("menuList");
+        list.innerHTML = "";
+
+        menuData.filter(m => m.category === currentCategory)
+            .forEach(item => {
+                const count = cart[item.id] || 0;
+
+                list.innerHTML += `
+                <div class="el-card el-card--always-shadow">
+                    <div class="el-card__body">
+                        <img class="food-img" src="${item.img}">
+                        <h4>${item.name}</h4>
+                        <div>${item.desc}</div>
+                        <div class="price">¥ ${item.price}</div>
+                        <div class="count-bar">
+                            <button class="el-button el-button--mini" onclick="changeCount(${item.id}, -1)">-</button>
+                            <span>${count}</span>
+                            <button class="el-button el-button--mini el-button--primary" onclick="changeCount(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+        updateCart();
+    }
+
+    function changeCategory(c) {
+        currentCategory = c;
+
+        document.querySelectorAll('.el-menu-item').forEach(el => {
+            el.classList.remove('is-active');
+            if (el.innerText === c) el.classList.add('is-active');
+        });
+
+        renderMenu();
+    }
+
+    function changeCount(id, delta) {
+        cart[id] = (cart[id] || 0) + delta;
+        if (cart[id] <= 0) delete cart[id];
+        renderMenu();
+    }
+
+    function updateCart() {
+        let totalCount = 0;
+        let totalPrice = 0;
+
+        Object.keys(cart).forEach(id => {
+            const item = menuData.find(m => m.id == id);
+            totalCount += cart[id];
+            totalPrice += cart[id] * item.price;
+        });
+
+        document.getElementById("cartInfo").innerText =
+            `🛒 已选 ${totalCount} 份 ｜ 合计 ¥${totalPrice}`;
+    }
+
+    function submitOrder() {
+        if (Object.keys(cart).length === 0) {
+            alert("请先选择菜品");
+            return;
+        }
+
+        const order = {
+            tableNo: "A01",
+            items: Object.keys(cart).map(id => ({
+                menuId: id,
+                count: cart[id]
+            }))
+        };
+
+        console.log("订单数据：", order);
+        alert("下单成功（模拟）");
+
+        cart = {};
+        renderMenu();
+    }
+
+    renderMenu();
+</script>
+
+</body>
+</html>

@@ -1,11 +1,9 @@
 package org.example.service;
 
-import org.example.entity.Menu;
-import org.example.entity.MenuDTO;
+import org.example.entity.entity.Menu;
+import org.example.entity.dto.MenuDTO;
 import org.example.entity.Response;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
 
 public interface MenuService {
 

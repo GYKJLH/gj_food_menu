@@ -6,7 +6,7 @@
 <mapper namespace="org.example.dao.MenuMapper">
 
     <!-- 查询所有食物 -->
-    <select id="selectAll" resultType="org.example.entity.Menu">
+    <select id="selectAll" resultType="org.example.entity.entity.Menu">
         SELECT * FROM food
     </select>
 

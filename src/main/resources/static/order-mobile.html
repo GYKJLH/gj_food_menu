@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>移动端点餐</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Element UI -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <!-- Vue / axios / Element UI JS -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            background: #f2f3f5;
+        }
+
+        .header {
+            height: 50px;
+            background: #409eff;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+        }
+
+        .category {
+            display: flex;
+            overflow-x: auto;
+            background: #fff;
+            border-bottom: 1px solid #ebeef5;
+        }
+
+        .category div {
+            padding: 12px 16px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .category .active {
+            color: #409eff;
+            border-bottom: 2px solid #409eff;
+        }
+
+        .menu-list {
+            padding: 10px;
+            padding-bottom: 90px;
+        }
+
+        .menu-card {
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .food-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .menu-body {
+            padding: 12px;
+        }
+
+        .menu-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .price {
+            color: #f56c6c;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .count button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #409eff;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .count span {
+            display: inline-block;
+            width: 30px;
+            text-align: center;
+        }
+
+        .cart {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #fff;
+            border-top: 1px solid #ebeef5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <!-- 顶部 -->
+    <div class="header">
+        <div>🍽 点餐</div>
+        <div>桌号 {{ tableNo }}</div>
+    </div>
+
+    <!-- 分类 -->
+    <div class="category">
+        <div v-for="c in categories"
+             :key="c"
+             :class="{active: c === currentCategory}"
+             @click="changeCategory(c)">
+            {{ c }}
+        </div>
+    </div>
+
+    <!-- 菜品 -->
+    <div class="menu-list">
+        <div class="menu-card"
+             v-for="item in filteredFoods"
+             :key="item.id">
+
+            <img class="food-img" :src="item.imgUrl">
+
+            <div class="menu-body">
+                <div><strong>{{ item.name }}</strong></div>
+                <div style="color:#666;font-size:13px">{{ item.description }}</div>
+
+                <div class="menu-footer">
+                    <div class="price">¥{{ item.price }}</div>
+                    <div class="count">
+                        <button @click="changeCount(item.id, -1)">−</button>
+                        <span>{{ cart[item.id] || 0 }}</span>
+                        <button @click="changeCount(item.id, 1)">＋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 购物车 -->
+    <div class="cart">
+        <div>🛒 {{ totalCount }} 份 ｜ ¥{{ totalPrice }}</div>
+        <el-button type="danger" size="small" @click="submitOrder">去下单</el-button>
+    </div>
+
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+
+        data() {
+            return {
+                foods: [],
+                cart: {},
+                currentCategory: ''
+            }
+        },
+
+        computed: {
+            categories() {
+                return [...new Set(this.foods.map(f => f.category))];
+            },
+
+            filteredFoods() {
+                return this.foods.filter(f => f.category === this.currentCategory);
+            },
+
+            totalCount() {
+                return Object.values(this.cart).reduce((a, b) => a + b, 0);
+            },
+
+            totalPrice() {
+                return Object.keys(this.cart).reduce((sum, id) => {
+                    const food = this.foods.find(f => f.id == id);
+                    return sum + this.cart[id] * (food ? food.price : 0);
+                }, 0);
+            }
+        },
+
+        created() {
+            this.loadMenu();
+        },
+
+        methods: {
+            // 查询菜单
+            loadMenu() {
+                axios.get('/order/listMenu').then(res => {
+                    const parsed = this.parseListResponse(res.data);
+                    this.foods = res.data.parsed.rows;
+                    this.total = parsed.total;
+                    this.currentCategory = this.categories[0] || '';
+                }).catch(err => {categories
+                    this.$message.error(err.response?.data?.message || '加载菜单失败');
+                });
+            },
+
+            changeCategory(c) {
+                this.currentCategory = c;
+            },
+
+            changeCount(id, delta) {
+                const count = (this.cart[id] || 0) + delta;
+                if (count <= 0) {
+                    this.$delete(this.cart, id);
+                } else {
+                    this.$set(this.cart, id, count);
+                }
+            },
+
+            submitOrder() {
+                if (Object.keys(this.cart).length === 0) {
+                    this.$message.warning("请先点菜");
+                    return;
+                }
+
+                const order = {
+                    tableNo: this.tableNo,
+                    items: Object.keys(this.cart).map(id => ({
+                        foodId: id,
+                        count: this.cart[id]
+                    }))
+                };
+
+                axios.post('/order/submit', order, {
+                    headers: {
+                        'Authorization': sessionStorage.getItem("token")
+                    }
+                }).then(() => {
+                    this.$message.success("下单成功");
+                    this.cart = {};
+                }).catch(err => {
+                    this.$message.error(err.response?.data?.message || '下单失败');
+                });
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

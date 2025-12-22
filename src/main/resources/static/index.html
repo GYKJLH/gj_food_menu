@@ -246,7 +246,7 @@
 
             // 查询
             loadFoods() {
-                axios.get('/food/list', {
+                axios.get('/menu/list', {
                     params: this.filter,
                     headers: {
                         'Authorization': sessionStorage.getItem("token"),
@@ -277,7 +277,7 @@
                     return;
                 }
 
-                axios.post('/food/add', this.addFoodData, {
+                axios.post('/menu/add', this.addFoodData, {
                     headers: {
                         'Authorization': sessionStorage.getItem("token"),
                         'Content-Type': 'application/json'
@@ -312,7 +312,7 @@
                     this.$message.error('菜名不能为空');
                     return;
                 }
-                axios.post('/food/edit', this.editFoodData, {
+                axios.post('/menu/edit', this.editFoodData, {
                     headers: {
                         'Authorization': sessionStorage.getItem("token"),
                         'Content-Type': 'application/json'
@@ -336,7 +336,7 @@
 
             // 随机推荐
             randomMenu(type) {
-                axios.get('/food/random', {
+                axios.get('/menu/random', {
                     params: {type: type},
                     headers: {
                         'Authorization': sessionStorage.getItem("token"),

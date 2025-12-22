@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import org.example.entity.User;
+import org.example.entity.entity.User;
 import org.example.service.UserService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.web.bind.annotation.*;

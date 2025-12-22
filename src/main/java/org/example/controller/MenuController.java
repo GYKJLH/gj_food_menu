@@ -1,15 +1,13 @@
 package org.example.controller;
 
-import org.example.entity.Menu;
-import org.example.entity.MenuDTO;
+import org.example.entity.entity.Menu;
+import org.example.entity.dto.MenuDTO;
 import org.example.service.MenuService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/menu")
