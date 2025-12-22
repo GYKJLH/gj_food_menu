@@ -3,10 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.example.dao.FoodMapper">
+<mapper namespace="org.example.dao.MenuMapper">
 
     <!-- 查询所有食物 -->
-    <select id="selectAll" resultType="org.example.entity.Food">
+    <select id="selectAll" resultType="org.example.entity.Menu">
         SELECT * FROM food
     </select>
 

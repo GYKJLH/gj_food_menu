@@ -2,11 +2,11 @@ package org.example.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.example.dao.FoodMapper;
-import org.example.entity.Food;
-import org.example.entity.FoodDTO;
+import org.example.dao.MenuMapper;
+import org.example.entity.Menu;
+import org.example.entity.MenuDTO;
 import org.example.entity.Response;
-import org.example.service.FoodService;
+import org.example.service.MenuService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
-public class FoodServiceImpl extends ServiceImpl<FoodMapper, Food> implements FoodService {
+public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
 
     @Value("${file.path}")
     private String filePath;
@@ -30,15 +30,15 @@ public class FoodServiceImpl extends ServiceImpl<FoodMapper, Food> implements Fo
     private String externalUrl;
 
     @Override
-    public Response list(FoodDTO foodDTO) {
-        List<Food> all = this.list(new LambdaQueryWrapper<Food>()
-                .eq(isNotBlank(foodDTO.getName()), Food::getName, foodDTO.getName())
-                .like(isNotBlank(foodDTO.getIngredients()), Food::getIngredients, foodDTO.getIngredients())
-                .eq(isNotBlank(foodDTO.getCook()), Food::getCook, foodDTO.getCook())
-                .eq(foodDTO.getType() != null, Food::getType, foodDTO.getType())
+    public Response list(MenuDTO menuDTO) {
+        List<Menu> all = this.list(new LambdaQueryWrapper<Menu>()
+                .eq(isNotBlank(menuDTO.getName()), Menu::getName, menuDTO.getName())
+                .like(isNotBlank(menuDTO.getIngredients()), Menu::getIngredients, menuDTO.getIngredients())
+                .eq(isNotBlank(menuDTO.getCook()), Menu::getCook, menuDTO.getCook())
+                .eq(menuDTO.getType() != null, Menu::getType, menuDTO.getType())
         );
-        int page = foodDTO.getPage() == null ? 1 : foodDTO.getPage();
-        int size = foodDTO.getPageSize() == null ? 10 : foodDTO.getPageSize();
+        int page = menuDTO.getPage() == null ? 1 : menuDTO.getPage();
+        int size = menuDTO.getPageSize() == null ? 10 : menuDTO.getPageSize();
         int fromIndex = (page - 1) * size;
         int toIndex = Math.min(fromIndex + size, all.size());
         // 防止越界
@@ -52,28 +52,28 @@ public class FoodServiceImpl extends ServiceImpl<FoodMapper, Food> implements Fo
     }
 
     @Override
-    public Response add(Food food) {
-        if (!this.list(new LambdaQueryWrapper<Food>().eq(Food::getName, food.getName())).isEmpty()) {
+    public Response add(Menu menu) {
+        if (!this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getName, menu.getName())).isEmpty()) {
             return new Response(400, "已经有这个菜了！");
         }
-        return new Response(200, "success", this.save(food));
+        return new Response(200, "success", this.save(menu));
     }
 
     @Override
-    public Response randomFood(Integer type) {
-        List<Food> foods = this.list(new LambdaQueryWrapper<Food>().eq(Food::getType, type));
-        if (foods.isEmpty()) {
+    public Response randomMenu(Integer type) {
+        List<Menu> menus = this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getType, type));
+        if (menus.isEmpty()) {
             return new Response(400,"没有相应菜单！");
         }
-        return new Response(200, "success", foods.get(ThreadLocalRandom.current().nextInt(0, foods.size())));
+        return new Response(200, "success", menus.get(ThreadLocalRandom.current().nextInt(0, menus.size())));
     }
 
     @Override
-    public Response edit(Food food) {
-        if (!this.list(new LambdaQueryWrapper<Food>().eq(Food::getName, food.getName()).ne(Food::getId, food.getId())).isEmpty()) {
+    public Response edit(Menu menu) {
+        if (!this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getName, menu.getName()).ne(Menu::getId, menu.getId())).isEmpty()) {
             return new Response(400, "已经有这个菜了！");
         }
-        return new Response(200, "success", this.updateById(food));
+        return new Response(200, "success", this.updateById(menu));
     }
 
     @Override
@@ -97,7 +97,7 @@ public class FoodServiceImpl extends ServiceImpl<FoodMapper, Food> implements Fo
             File dest = new File(dir, fileName);
             file.transferTo(dest);
 
-            // 拼接访问 URL（注意这里要与你的静态资源映射路径匹配）
+            // 拼接访问 URL（与静态资源映射路径匹配）
             String fileUrl = externalUrl + "/file/" + fileName;
 
             return new Response(200, "success", fileUrl);

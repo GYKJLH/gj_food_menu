@@ -3,7 +3,7 @@ package org.example.entity;
 import lombok.Data;
 
 @Data
-public class FoodDTO {
+public class MenuDTO {
 
     // 菜名
     private String name;
