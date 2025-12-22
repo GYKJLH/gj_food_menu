@@ -37,4 +37,8 @@ public class Menu {
     @TableField(value = "image")
     private String image;
 
+    // 简介
+    @TableField(value = "introduction")
+    private String introduction;
+
 }
