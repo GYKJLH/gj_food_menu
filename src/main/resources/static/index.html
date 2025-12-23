@@ -38,6 +38,7 @@
         <!-- 食谱表格 -->
         <el-table :data="foods" border style="width: 100%">
             <el-table-column prop="name" label="菜名"></el-table-column>
+            <el-table-column prop="introduction" label="简介"></el-table-column>
             <el-table-column prop="ingredients" label="食材"></el-table-column>
             <el-table-column prop="method" label="做法"></el-table-column>
             <el-table-column prop="cook" label="厨师"></el-table-column>
@@ -87,6 +88,9 @@
             <el-form-item label="菜名">
                 <el-input v-model="addFoodData.name"></el-input>
             </el-form-item>
+            <el-form-item label="简介">
+                <el-input v-model="editFoodData.introduction"></el-input>
+            </el-form-item>
             <el-form-item label="食材">
                 <el-input v-model="addFoodData.ingredients"></el-input>
             </el-form-item>
@@ -109,7 +113,7 @@
                 <el-upload
                         class="upload-demo"
                         drag
-                        action="/food/upload"
+                        action="/menu/upload"
                         :headers="uploadHeaders"
                         :on-success="handleUploadSuccess"
                         name="file"
@@ -145,6 +149,9 @@
             <el-form-item label="菜名">
                 <el-input v-model="editFoodData.name"></el-input>
             </el-form-item>
+            <el-form-item label="简介">
+                <el-input v-model="editFoodData.introduction"></el-input>
+            </el-form-item>
             <el-form-item label="食材">
                 <el-input v-model="editFoodData.ingredients"></el-input>
             </el-form-item>
@@ -176,7 +183,7 @@
                 <el-upload
                         class="upload-demo"
                         drag
-                        action="/food/upload"
+                        action="/menu/upload"
                         :headers="uploadHeaders"
                         :on-success="uploadEditSuccess"
                         name="file"
@@ -209,9 +216,9 @@
             total: 0,
             filter: {name: '', ingredients: '', cook: null, type: null, page: 1, pageSize: 10},
             addDialogVisible: false,
-            addFoodData: {name: '', ingredients: '', method: '', cook: null, type: null, image: null},
+            addFoodData: {name: '', ingredients: '', introduction: '', method: '', cook: null, type: null, image: null},
             editDialogVisible: false,
-            editFoodData: {id: null, name: '', ingredients: '', method: '', cook: null, type: null, image: null},
+            editFoodData: {id: null, name: '', ingredients: '', introduction: '', method: '', cook: null, type: null, image: null},
             uploadHeaders: {
                 'Authorization': sessionStorage.getItem("token")
             },
