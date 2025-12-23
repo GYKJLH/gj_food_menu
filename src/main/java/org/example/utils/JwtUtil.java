@@ -53,10 +53,18 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ 获取用户名（或其他自定义字段）
+     * ✅ 获取用户名
      */
     public static String getUsername(String token) {
         Claims claims = parseToken(token);
         return claims != null ? (String) claims.get("username") : null;
+    }
+
+    /**
+     * ✅ 获取用户ID
+     */
+    public static Integer getUserId(String token) {
+        Claims claims = parseToken(token);
+        return claims != null ? (Integer) claims.get("userId") : null;
     }
 }

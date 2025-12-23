@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>移动端点餐</title>
+    <title>点餐</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -25,13 +25,12 @@
     </div>
 
     <!-- 菜品 -->
-    <div class="menu-list">
+    <!-- 菜品（点餐页） -->
+    <div class="menu-list" v-if="activeTab === 'menu'">
         <div class="menu-card" v-for="item in foods" :key="item.id">
             <div class="menu-row">
-                <!-- 左边图片 -->
                 <img class="food-img" :src="item.image">
 
-                <!-- 右边内容 -->
                 <div class="menu-info">
                     <div class="food-name">{{ item.menuName }}</div>
                     <div class="food-intro">{{ item.introduction }}</div>
@@ -48,39 +47,81 @@
         </div>
     </div>
 
+    <!-- 订单页 -->
+    <div class="order-page" v-if="activeTab === 'orders'">
+
+        <div class="order-card" v-for="item in orderList" :key="item.id">
+            <div class="order-header">
+                <span class="menu-name">{{ item.menuName }}</span>
+                <span class="menu-count">x{{ item.menuCount }}</span>
+            </div>
+
+            <div class="order-body">
+                <div class="order-row">
+                    <span class="label">下单人</span>
+                    <span>{{ item.orderUser }}</span>
+                </div>
+                <div class="order-row">
+                    <span class="label">下单时间</span>
+                    <span>{{ formatTime(item.orderTime) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="orderList.length === 0" class="empty">
+            暂无订单
+        </div>
+
+    </div>
+
+
+
     <!-- 底部固定栏 -->
     <div class="bottom-bar">
+
         <!-- 左侧 tab -->
         <div class="tab-bar">
             <div
                     class="tab-item"
                     :class="{ active: activeTab === 'menu' }"
-                    @click="activeTab = 'menu'">点餐</div>
+                    @click="activeTab = 'menu'">
+                点餐
+            </div>
             <div
                     class="tab-item"
                     :class="{ active: activeTab === 'orders' }"
-                    @click="activeTab = 'orders'">订单</div>
-            <div
-                    class="tab-item"
-                    :class="{ active: activeTab === 'mine' }"
-                    @click="activeTab = 'mine'">我的</div>
+                    @click="loadOrderList">
+                订单
+            </div>
         </div>
 
-        <!-- 中间购物信息 -->
-        <div class="cart-info">
+        <!-- 中间购物信息（只在点餐页显示） -->
+        <div class="cart-info" v-if="activeTab === 'menu'">
             🛒 已选 {{ totalCount }} 份
         </div>
 
-        <!-- 右侧结算按钮 -->
-        <el-button type="danger" class="submit-btn" @click="submitOrder">
+        <!-- 右侧结算按钮（只在点餐页显示） -->
+        <el-button
+                v-if="activeTab === 'menu'"
+                type="danger"
+                class="submit-btn"
+                @click="submitOrder">
             去结算
         </el-button>
+
     </div>
 
 
 </div>
 
 <script>
+
+    // 检查登录状态（必须放在最顶部执行）
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/order-login.html';
+    }
+
     new Vue({
         el: '#app',
 
@@ -88,7 +129,9 @@
             return {
                 foods: [],
                 cart: {},
-                activeTab: 'menu'
+                activeTab: 'menu',
+                orderList: [],
+                addOrder: [],
             }
         },
 
@@ -128,14 +171,45 @@
                 if (this.cart[itemId] < 0) this.cart[itemId] = 0;
             },
             submitOrder() {
-                if(this.totalCount === 0){
+                if (this.totalCount === 0) {
                     this.$message.warning("请先选择菜品");
                     return;
                 }
-                const order = Object.keys(this.cart).map(id => ({ menuId:id, count:this.cart[id] }));
-                console.log("下单数据:", order);
-                this.$message.success("下单成功（模拟）");
-                this.cart = {};
+                this.addOrder = Object.keys(this.cart).map(id => ({menuId: id, count: this.cart[id]}));
+                axios.post('/order/add', this.addOrder, {
+                    headers: {
+                        'Authorization': sessionStorage.getItem("token")
+                    }
+                }).then(res => {
+                    if (res.data.code === 200) {
+                        this.cart = {}
+                        this.addOrder = {}
+                    } else {
+                        this.$message.error(res.data.message)
+                    }
+                }).catch(err => {
+                    this.$message.error(err.response?.data?.message || '加载菜单失败');
+                });
+            },
+            loadOrderList() {
+                this.activeTab = 'orders'
+                axios.get('/order/list', {
+                    headers: {
+                        'Authorization': sessionStorage.getItem("token")
+                    }
+                }).then(res => {
+                    console.log(res.data)
+                    if (res.data.code === 200) {
+                        this.orderList = res.data.data
+                    } else {
+                        this.$message.error(res.data.message)
+                    }
+                }).catch(err => {
+                    this.$message.error(err.response?.data?.message || '加载订单失败');
+                });
+            },
+            formatTime(time) {
+                return time ? time.replace('T', ' ') : '';
             }
 
         }
@@ -277,6 +351,61 @@
     .submit-btn {
         height: 40px;
     }
+
+    .order-page {
+        padding: 12px;
+        padding-bottom: 80px;
+        background: #f6f6f6;
+    }
+
+    .order-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .menu-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .menu-count {
+        font-size: 14px;
+        color: #ff4d4f;
+    }
+
+    .order-body {
+        font-size: 13px;
+        color: #666;
+    }
+
+    .order-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+    }
+
+    .order-row .label {
+        color: #999;
+    }
+
+    .empty {
+        text-align: center;
+        color: #999;
+        margin-top: 60px;
+        font-size: 14px;
+    }
+
 
 
 </style>

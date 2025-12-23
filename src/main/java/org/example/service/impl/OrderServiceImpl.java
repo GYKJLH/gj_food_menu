@@ -13,13 +13,16 @@ import org.example.entity.entity.Menu;
 import org.example.entity.entity.Order;
 import org.example.entity.entity.User;
 import org.example.entity.vo.MenuForOrderVO;
+import org.example.entity.vo.OrderVO;
 import org.example.service.OrderService;
 import org.example.utils.JwtUtil;
+import org.example.utils.MenuForOrderConvert;
 import org.example.utils.OrderConvert;
 import org.example.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +38,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private MenuMapper menuMapper;
 
     @Autowired
+    private MenuForOrderConvert menuForOrderConvert;
+    @Autowired
     private OrderConvert orderConvert;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Override
     public Response register(UserDTO userDTO) {
@@ -80,6 +88,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("username", users.get(0).getUsername());
+        userInfo.put("userId", users.get(0).getId());
         userInfo.put("password", userDTO.getPassword());
         return Response.success(JwtUtil.generateToken(userInfo),"登录成功！");
     }
@@ -88,13 +97,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Response<List<MenuForOrderVO>> listMenu(OrderDTO orderDTO) {
         List<Menu> menuList = menuMapper.selectList(new LambdaQueryWrapper<Menu>());
-        List<MenuForOrderVO> menuForOrderVOS = orderConvert.toMenuForOrderVOList(menuList);
+        List<MenuForOrderVO> menuForOrderVOS = menuForOrderConvert.toMenuForOrderVOList(menuList);
         return Response.success(menuForOrderVOS);
     }
 
     @Override
-    public Response add(OrderAddDTO orderAddDTO) {
+    public Response add(List<OrderAddDTO> orderAddDTOs, HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        String userName = JwtUtil.getUsername(token);
+        orderMapper.saveBatchs(userName,orderAddDTOs,LocalDateTime.now());
+        return Response.success();
+    }
 
-        return null;
+    @Override
+    public Response<List<OrderVO>> list(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        String userName = JwtUtil.getUsername(token);
+        List<Order> orders = this.getBaseMapper().listMyOrders(userName);
+        return Response.success(orderConvert.toOrderVOList(orders));
     }
 }

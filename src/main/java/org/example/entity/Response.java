@@ -23,6 +23,13 @@ public class Response<T> {
         this.data = data;
     }
 
+    public static <T> Response<T> success() {
+        Response<T> r = new Response<>();
+        r.code = 200;
+        r.message = "success";
+        return r;
+    }
+
     public static <T> Response<T> success(T data) {
         Response<T> r = new Response<>();
         r.code = 200;

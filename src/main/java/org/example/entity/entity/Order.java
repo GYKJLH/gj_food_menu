@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
-@TableName("order")
+@TableName("`order`")
 public class Order {
 
     @TableId
@@ -19,9 +21,12 @@ public class Order {
     private Integer menuCount;
 
     @TableField(value = "order_user")
-    private Integer orderUser;
+    private String orderUser;
 
     @TableField(value = "create_time")
-    private Integer createTime;
+    private LocalDateTime createTime;
+
+    @TableField(exist = false)
+    private String menuName;
 
 }

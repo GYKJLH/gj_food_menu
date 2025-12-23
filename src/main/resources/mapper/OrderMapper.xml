@@ -6,4 +6,16 @@
 <mapper namespace="org.example.dao.OrderMapper">
 
 
+    <insert id="saveBatchs">
+        insert into `order`
+        (menu_id,menu_count,order_user,create_time) values
+        <foreach collection="orderAddDTOs" item="item" separator=",">
+            (#{item.menuId},#{item.count},#{userName},#{now})
+        </foreach>
+    </insert>
+    <select id="listMyOrders" resultType="org.example.entity.entity.Order">
+        select o.*,m.name as menuName from `order` o
+        left join menu m on o.menu_id = m.id
+        where o.order_user = #{userName}
+    </select>
 </mapper>

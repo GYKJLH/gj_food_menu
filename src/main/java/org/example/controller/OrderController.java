@@ -5,6 +5,7 @@ import org.example.entity.dto.OrderAddDTO;
 import org.example.entity.dto.OrderDTO;
 import org.example.entity.dto.UserDTO;
 import org.example.entity.vo.MenuForOrderVO;
+import org.example.entity.vo.OrderVO;
 import org.example.service.OrderService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -36,9 +38,14 @@ public class OrderController {
         return ResponseEntity.ok(orderService.listMenu(orderDTO));
     }
 
-    @GetMapping("/add")
-    public ResponseEntity<Response> add(OrderAddDTO orderAddDTO) {
-        return ResponseEntity.ok(orderService.add(orderAddDTO));
+    @PostMapping("/add")
+    public ResponseEntity<Response> add(@RequestBody List<OrderAddDTO> orderAddDTOs, HttpServletRequest request) {
+        return ResponseEntity.ok(orderService.add(orderAddDTOs, request));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Response<List<OrderVO>>> list(HttpServletRequest request) {
+        return ResponseEntity.ok(orderService.list(request));
     }
 
 }
