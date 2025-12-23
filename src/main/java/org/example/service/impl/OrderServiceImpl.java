@@ -6,6 +6,7 @@ import org.example.dao.MenuMapper;
 import org.example.dao.OrderMapper;
 import org.example.dao.UserMapper;
 import org.example.entity.Response;
+import org.example.entity.dto.OrderAddDTO;
 import org.example.entity.dto.OrderDTO;
 import org.example.entity.dto.UserDTO;
 import org.example.entity.entity.Menu;
@@ -14,12 +15,12 @@ import org.example.entity.entity.User;
 import org.example.entity.vo.MenuForOrderVO;
 import org.example.service.OrderService;
 import org.example.utils.JwtUtil;
+import org.example.utils.OrderConvert;
 import org.example.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private MenuMapper menuMapper;
+
+    @Autowired
+    private OrderConvert orderConvert;
 
     @Override
     public Response register(UserDTO userDTO) {
@@ -83,16 +87,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public Response<List<MenuForOrderVO>> listMenu(OrderDTO orderDTO) {
-        menuMapper.selectList(new LambdaQueryWrapper<Menu>());
-        List<MenuForOrderVO> menuForOrderVOS = new ArrayList<>();
-        MenuForOrderVO menuForOrderVO = MenuForOrderVO.builder()
-                .id(1)
-                .menuId(1)
-                .menuName("这是菜名")
-                .image("http://127.0.0.1:10000/file/20251114_112853514.jpg")
-                .introduction("这是第一道菜，看看是否正常显示")
-                .build();
-        menuForOrderVOS.add(menuForOrderVO);
+        List<Menu> menuList = menuMapper.selectList(new LambdaQueryWrapper<Menu>());
+        List<MenuForOrderVO> menuForOrderVOS = orderConvert.toMenuForOrderVOList(menuList);
         return Response.success(menuForOrderVOS);
+    }
+
+    @Override
+    public Response add(OrderAddDTO orderAddDTO) {
+
+        return null;
     }
 }

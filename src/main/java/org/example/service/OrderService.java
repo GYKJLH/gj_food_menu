@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.entity.Response;
+import org.example.entity.dto.OrderAddDTO;
 import org.example.entity.dto.OrderDTO;
 import org.example.entity.dto.UserDTO;
 import org.example.entity.vo.MenuForOrderVO;
@@ -15,4 +16,5 @@ public interface OrderService {
 
     Response<List<MenuForOrderVO>> listMenu(OrderDTO orderDTO);
 
+    Response add(OrderAddDTO orderAddDTO);
 }

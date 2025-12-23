@@ -27,8 +27,7 @@ public class AuthFilter implements Filter {
         String uri = req.getRequestURI();
 
         if ("/".equals(uri)) {
-            String url = externalUrl + "/index.html";
-            log.info("跳转地址:" + url);
+            String url = externalUrl + "/order-mobile.html";
             res.sendRedirect(url);
             return;
         }
@@ -36,7 +35,7 @@ public class AuthFilter implements Filter {
         // 放行登录页、静态资源、登录接口
         if (uri.endsWith("login.html") || uri.startsWith("/static") || uri.endsWith("index.html")
                 || uri.contains("/file") || uri.endsWith("order-index.html") || uri.endsWith("order-mobile.html")
-                || uri.contains("/noToken")
+                || uri.contains("/noToken") || uri.endsWith("order-login.html") || uri.endsWith("favicon.ico")
         ) {
             chain.doFilter(request, response);
             return;

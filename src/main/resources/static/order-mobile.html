@@ -48,6 +48,36 @@
         </div>
     </div>
 
+    <!-- 底部固定栏 -->
+    <div class="bottom-bar">
+        <!-- 左侧 tab -->
+        <div class="tab-bar">
+            <div
+                    class="tab-item"
+                    :class="{ active: activeTab === 'menu' }"
+                    @click="activeTab = 'menu'">点餐</div>
+            <div
+                    class="tab-item"
+                    :class="{ active: activeTab === 'orders' }"
+                    @click="activeTab = 'orders'">订单</div>
+            <div
+                    class="tab-item"
+                    :class="{ active: activeTab === 'mine' }"
+                    @click="activeTab = 'mine'">我的</div>
+        </div>
+
+        <!-- 中间购物信息 -->
+        <div class="cart-info">
+            🛒 已选 {{ totalCount }} 份
+        </div>
+
+        <!-- 右侧结算按钮 -->
+        <el-button type="danger" class="submit-btn" @click="submitOrder">
+            去结算
+        </el-button>
+    </div>
+
+
 </div>
 
 <script>
@@ -57,11 +87,16 @@
         data() {
             return {
                 foods: [],
-                cart: {}
+                cart: {},
+                activeTab: 'menu'
             }
         },
 
-        computed: {},
+        computed: {
+            totalCount() {
+                return Object.values(this.cart).reduce((a, b) => a + b, 0);
+            }
+        },
 
         created() {
             this.loadMenu();
@@ -91,6 +126,16 @@
                 }
                 this.cart[itemId] += delta;
                 if (this.cart[itemId] < 0) this.cart[itemId] = 0;
+            },
+            submitOrder() {
+                if(this.totalCount === 0){
+                    this.$message.warning("请先选择菜品");
+                    return;
+                }
+                const order = Object.keys(this.cart).map(id => ({ menuId:id, count:this.cart[id] }));
+                console.log("下单数据:", order);
+                this.$message.success("下单成功（模拟）");
+                this.cart = {};
             }
 
         }
@@ -186,6 +231,53 @@
         width: 30px;
         text-align: center;
     }
+
+    /* 底部容器 */
+    .bottom-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #fff;
+        border-top: 1px solid #ebeef5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+        z-index: 100;
+    }
+
+    /* tab 栏 */
+    .tab-bar {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    .tab-item {
+        padding: 0 12px;
+        line-height: 60px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .tab-item.active {
+        color: #409eff;
+        font-weight: bold;
+        border-bottom: 2px solid #409eff;
+    }
+
+    /* 中间购物信息 */
+    .cart-info {
+        font-size: 14px;
+    }
+
+    /* 右侧结算按钮 */
+    .submit-btn {
+        height: 40px;
+    }
+
 
 </style>
 </body>

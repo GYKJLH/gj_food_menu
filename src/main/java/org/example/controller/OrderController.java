@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.entity.Response;
+import org.example.entity.dto.OrderAddDTO;
 import org.example.entity.dto.OrderDTO;
 import org.example.entity.dto.UserDTO;
 import org.example.entity.vo.MenuForOrderVO;
@@ -33,6 +34,11 @@ public class OrderController {
     @GetMapping("/listMenu")
     public ResponseEntity<Response<List<MenuForOrderVO>>> list(OrderDTO orderDTO) {
         return ResponseEntity.ok(orderService.listMenu(orderDTO));
+    }
+
+    @GetMapping("/add")
+    public ResponseEntity<Response> add(OrderAddDTO orderAddDTO) {
+        return ResponseEntity.ok(orderService.add(orderAddDTO));
     }
 
 }

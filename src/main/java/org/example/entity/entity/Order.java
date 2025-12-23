@@ -14,4 +14,14 @@ public class Order {
 
     @TableField(value = "menu_id")
     private Integer menuId;
+
+    @TableField(value = "menu_count")
+    private Integer menuCount;
+
+    @TableField(value = "order_user")
+    private Integer orderUser;
+
+    @TableField(value = "create_time")
+    private Integer createTime;
+
 }

@@ -1,237 +1,212 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>在线点餐</title>
+<!--<!DOCTYPE html>-->
+<!--<html lang="zh-CN">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>在线点餐 - 普通网页</title>-->
 
-    <!-- Element UI 样式 -->
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!--    &lt;!&ndash; Element UI 样式 &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
 
-    <style>
-        body {
-            margin: 0;
-            background: #f2f3f5;
-        }
+<!--    <style>-->
+<!--        body {-->
+<!--            margin: 0;-->
+<!--            font-family: Arial, sans-serif;-->
+<!--            background: #f2f3f5;-->
+<!--        }-->
 
-        .header {
-            height: 60px;
-            background: #409eff;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            font-size: 18px;
-        }
+<!--        .header {-->
+<!--            height: 60px;-->
+<!--            background: #409eff;-->
+<!--            color: #fff;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: space-between;-->
+<!--            padding: 0 20px;-->
+<!--            font-size: 20px;-->
+<!--        }-->
 
-        .container {
-            display: flex;
-            height: calc(100vh - 120px);
-        }
+<!--        .container {-->
+<!--            display: table;-->
+<!--            width: 100%;-->
+<!--            table-layout: fixed;-->
+<!--        }-->
 
-        .menu-left {
-            width: 200px;
-            background: #fff;
-            border-right: 1px solid #ebeef5;
-        }
+<!--        .menu-left {-->
+<!--            display: table-cell;-->
+<!--            width: 200px;-->
+<!--            vertical-align: top;-->
+<!--            background: #fff;-->
+<!--            border-right: 1px solid #ebeef5;-->
+<!--            padding: 10px;-->
+<!--        }-->
 
-        .menu-right {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
+<!--        .menu-left ul {-->
+<!--            list-style: none;-->
+<!--            padding: 0;-->
+<!--            margin: 0;-->
+<!--        }-->
 
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-        }
+<!--        .menu-left li {-->
+<!--            padding: 10px;-->
+<!--            cursor: pointer;-->
+<!--        }-->
 
-        .food-img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
+<!--        .menu-left li.active {-->
+<!--            background: #409eff;-->
+<!--            color: #fff;-->
+<!--        }-->
 
-        .price {
-            color: #f56c6c;
-            font-weight: bold;
-            font-size: 16px;
-        }
+<!--        .menu-right {-->
+<!--            display: table-cell;-->
+<!--            padding: 20px;-->
+<!--            vertical-align: top;-->
+<!--        }-->
 
-        .count-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
+<!--        .menu-item {-->
+<!--            display: inline-block;-->
+<!--            width: 220px;-->
+<!--            margin: 10px;-->
+<!--            background: #fff;-->
+<!--            border: 1px solid #ebeef5;-->
+<!--            border-radius: 4px;-->
+<!--            text-align: center;-->
+<!--            padding: 10px;-->
+<!--        }-->
 
-        .footer {
-            height: 60px;
-            background: #fff;
-            border-top: 1px solid #ebeef5;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            font-size: 16px;
-        }
-    </style>
-</head>
-<body>
+<!--        .food-img {-->
+<!--            width: 100%;-->
+<!--            height: 120px;-->
+<!--            object-fit: cover;-->
+<!--            border-radius: 4px;-->
+<!--        }-->
 
-<!-- 顶部 -->
-<div class="header">
-    <div>🍽 自助点餐</div>
-    <div>桌号：A01</div>
-</div>
+<!--        .price {-->
+<!--            color: #f56c6c;-->
+<!--            font-weight: bold;-->
+<!--            margin-top: 5px;-->
+<!--        }-->
 
-<div class="container">
+<!--        .count-bar {-->
+<!--            margin-top: 5px;-->
+<!--        }-->
 
-    <!-- 左侧分类 -->
-    <div class="menu-left">
-        <ul class="el-menu el-menu-vertical">
-            <li class="el-menu-item is-active" onclick="changeCategory('热菜')">热菜</li>
-            <li class="el-menu-item" onclick="changeCategory('凉菜')">凉菜</li>
-            <li class="el-menu-item" onclick="changeCategory('主食')">主食</li>
-            <li class="el-menu-item" onclick="changeCategory('饮料')">饮料</li>
-        </ul>
-    </div>
+<!--        .footer {-->
+<!--            height: 60px;-->
+<!--            background: #fff;-->
+<!--            border-top: 1px solid #ebeef5;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: space-between;-->
+<!--            padding: 0 20px;-->
+<!--            font-size: 16px;-->
+<!--            position: fixed;-->
+<!--            bottom: 0;-->
+<!--            width: 100%;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
 
-    <!-- 右侧菜品 -->
-    <div class="menu-right">
-        <div class="menu-grid" id="menuList"></div>
-    </div>
-</div>
+<!--<div class="header">-->
+<!--    <div>🍽 自助点餐</div>-->
+<!--    <div>桌号：A01</div>-->
+<!--</div>-->
 
-<!-- 底部购物车 -->
-<div class="footer">
-    <div id="cartInfo">🛒 已选 0 份 ｜ 合计 ¥0</div>
-    <button class="el-button el-button--danger" onclick="submitOrder()">去结算</button>
-</div>
+<!--<div class="container">-->
+<!--    <div class="menu-left">-->
+<!--        <ul>-->
+<!--            <li :class="{active: currentCategory==='热菜'}" onclick="changeCategory('热菜')">热菜</li>-->
+<!--            <li :class="{active: currentCategory==='凉菜'}" onclick="changeCategory('凉菜')">凉菜</li>-->
+<!--            <li :class="{active: currentCategory==='主食'}" onclick="changeCategory('主食')">主食</li>-->
+<!--            <li :class="{active: currentCategory==='饮料'}" onclick="changeCategory('饮料')">饮料</li>-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--    <div class="menu-right" id="menuList">-->
+<!--        &lt;!&ndash; 菜品渲染 &ndash;&gt;-->
+<!--    </div>-->
+<!--</div>-->
 
-<script>
-    // ====== 菜单数据（以后换成后端接口）======
-    const menuData = [
-        {
-            id: 1,
-            name: "宫保鸡丁",
-            price: 28,
-            category: "热菜",
-            desc: "经典川菜，微辣",
-            img: "https://img2.baidu.com/it/u=3016808817,1812518289&fm=253"
-        },
-        {
-            id: 2,
-            name: "鱼香肉丝",
-            price: 26,
-            category: "热菜",
-            desc: "酸甜可口",
-            img: "https://img0.baidu.com/it/u=2514208056,3492410130&fm=253"
-        },
-        {
-            id: 3,
-            name: "凉拌黄瓜",
-            price: 12,
-            category: "凉菜",
-            desc: "清爽解腻",
-            img: "https://img2.baidu.com/it/u=2001340050,1087884141&fm=253"
-        },
-        {
-            id: 4,
-            name: "米饭",
-            price: 3,
-            category: "主食",
-            desc: "香软可口",
-            img: "https://img1.baidu.com/it/u=3349841931,3508846982&fm=253"
-        }
-    ];
+<!--<div class="footer">-->
+<!--    <div id="cartInfo">🛒 已选 0 份 ｜ 合计 ¥0</div>-->
+<!--    <button class="el-button el-button&#45;&#45;danger" onclick="submitOrder()">去结算</button>-->
+<!--</div>-->
 
-    let currentCategory = "热菜";
-    let cart = {};
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>-->
+<!--<script>-->
+<!--    const menuData = [-->
+<!--        {id: 1, name: "宫保鸡丁", price: 28, category: "热菜", desc: "经典川菜，微辣", img: "https://img2.baidu.com/it/u=3016808817,1812518289&fm=253"},-->
+<!--        {id: 2, name: "鱼香肉丝", price: 26, category: "热菜", desc: "酸甜可口", img: "https://img0.baidu.com/it/u=2514208056,3492410130&fm=253"},-->
+<!--        {id: 3, name: "凉拌黄瓜", price: 12, category: "凉菜", desc: "清爽解腻", img: "https://img2.baidu.com/it/u=2001340050,1087884141&fm=253"},-->
+<!--        {id: 4, name: "米饭", price: 3, category: "主食", desc: "香软可口", img: "https://img1.baidu.com/it/u=3349841931,3508846982&fm=253"}-->
+<!--    ];-->
 
-    function renderMenu() {
-        const list = document.getElementById("menuList");
-        list.innerHTML = "";
+<!--    let currentCategory = "热菜";-->
+<!--    let cart = {};-->
 
-        menuData.filter(m => m.category === currentCategory)
-            .forEach(item => {
-                const count = cart[item.id] || 0;
+<!--    function renderMenu() {-->
+<!--        const list = document.getElementById("menuList");-->
+<!--        list.innerHTML = "";-->
 
-                list.innerHTML += `
-                <div class="el-card el-card--always-shadow">
-                    <div class="el-card__body">
-                        <img class="food-img" src="${item.img}">
-                        <h4>${item.name}</h4>
-                        <div>${item.desc}</div>
-                        <div class="price">¥ ${item.price}</div>
-                        <div class="count-bar">
-                            <button class="el-button el-button--mini" onclick="changeCount(${item.id}, -1)">-</button>
-                            <span>${count}</span>
-                            <button class="el-button el-button--mini el-button--primary" onclick="changeCount(${item.id}, 1)">+</button>
-                        </div>
-                    </div>
-                </div>`;
-            });
+<!--        menuData.filter(m => m.category === currentCategory).forEach(item => {-->
+<!--            const count = cart[item.id] || 0;-->
+<!--            const div = document.createElement('div');-->
+<!--            div.className = 'menu-item';-->
+<!--            div.innerHTML = `-->
+<!--                <img class="food-img" src="${item.img}">-->
+<!--                <h4>${item.name}</h4>-->
+<!--                <div>${item.desc}</div>-->
+<!--                <div class="price">¥ ${item.price}</div>-->
+<!--                <div class="count-bar">-->
+<!--                    <button class="el-button el-button&#45;&#45;mini" onclick="changeCount(${item.id}, -1)">-</button>-->
+<!--                    <span>${count}</span>-->
+<!--                    <button class="el-button el-button&#45;&#45;mini el-button&#45;&#45;primary" onclick="changeCount(${item.id}, 1)">+</button>-->
+<!--                </div>-->
+<!--            `;-->
+<!--            list.appendChild(div);-->
+<!--        });-->
 
-        updateCart();
-    }
+<!--        updateCart();-->
+<!--    }-->
 
-    function changeCategory(c) {
-        currentCategory = c;
+<!--    function changeCategory(c) {-->
+<!--        currentCategory = c;-->
+<!--        renderMenu();-->
+<!--    }-->
 
-        document.querySelectorAll('.el-menu-item').forEach(el => {
-            el.classList.remove('is-active');
-            if (el.innerText === c) el.classList.add('is-active');
-        });
+<!--    function changeCount(id, delta) {-->
+<!--        cart[id] = (cart[id] || 0) + delta;-->
+<!--        if (cart[id] <= 0) delete cart[id];-->
+<!--        renderMenu();-->
+<!--    }-->
 
-        renderMenu();
-    }
+<!--    function updateCart() {-->
+<!--        let totalCount = 0;-->
+<!--        let totalPrice = 0;-->
+<!--        Object.keys(cart).forEach(id => {-->
+<!--            const item = menuData.find(m => m.id == id);-->
+<!--            totalCount += cart[id];-->
+<!--            totalPrice += cart[id] * item.price;-->
+<!--        });-->
+<!--        document.getElementById("cartInfo").innerText = `🛒 已选 ${totalCount} 份 ｜ 合计 ¥${totalPrice}`;-->
+<!--    }-->
 
-    function changeCount(id, delta) {
-        cart[id] = (cart[id] || 0) + delta;
-        if (cart[id] <= 0) delete cart[id];
-        renderMenu();
-    }
+<!--    function submitOrder() {-->
+<!--        if (!Object.keys(cart).length) {-->
+<!--            alert("请先选择菜品");-->
+<!--            return;-->
+<!--        }-->
+<!--        const order = {-->
+<!--            tableNo: "A01",-->
+<!--            items: Object.keys(cart).map(id => ({ menuId: id, count: cart[id] }))-->
+<!--        };-->
+<!--        console.log("订单数据：", order);-->
+<!--        alert("下单成功（模拟）");-->
+<!--        cart = {};-->
+<!--        renderMenu();-->
+<!--    }-->
 
-    function updateCart() {
-        let totalCount = 0;
-        let totalPrice = 0;
+<!--    renderMenu();-->
+<!--</script>-->
 
-        Object.keys(cart).forEach(id => {
-            const item = menuData.find(m => m.id == id);
-            totalCount += cart[id];
-            totalPrice += cart[id] * item.price;
-        });
-
-        document.getElementById("cartInfo").innerText =
-            `🛒 已选 ${totalCount} 份 ｜ 合计 ¥${totalPrice}`;
-    }
-
-    function submitOrder() {
-        if (Object.keys(cart).length === 0) {
-            alert("请先选择菜品");
-            return;
-        }
-
-        const order = {
-            tableNo: "A01",
-            items: Object.keys(cart).map(id => ({
-                menuId: id,
-                count: cart[id]
-            }))
-        };
-
-        console.log("订单数据：", order);
-        alert("下单成功（模拟）");
-
-        cart = {};
-        renderMenu();
-    }
-
-    renderMenu();
-</script>
-
-</body>
-</html>
+<!--</body>-->
+<!--</html>-->

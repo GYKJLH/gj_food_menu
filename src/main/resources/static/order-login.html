@@ -213,7 +213,7 @@
                             this.$message.success(res.data.message);
                             sessionStorage.setItem("token", res.data.data);
                             // 跳转点餐页面
-                            window.location.href = "/order-mobile.html";
+                            window.location.href = "/order-index.html";
                         } else {
                             this.$message.error(res.data.message)
                         }
