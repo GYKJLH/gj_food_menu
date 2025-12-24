@@ -34,7 +34,6 @@
                     clearable
                     prefix-icon="el-icon-search"
                     class="search-input"
-                    @keyup.enter.native="loadMenu()"
             />
         </div>
         <div class="menu-card" v-for="item in filteredFoods" :key="item.id">
