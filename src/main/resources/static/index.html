@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>食谱管理</title>
+    <title>菜单管理</title>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <script src="https://unpkg.com/vue@2"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -11,7 +11,7 @@
 <body>
 <div id="app" style="padding: 40px;">
     <el-card>
-        <h2><i class="el-icon-food"></i> 菜谱</h2>
+        <h2><i class="el-icon-food"></i> 菜单</h2>
         <!-- 查询条件 -->
         <el-input v-model="filter.name" placeholder="菜名" style="width: 150px; margin-right: 10px;"></el-input>
         <el-input v-model="filter.ingredients" placeholder="食材" style="width: 150px; margin-right: 10px;"></el-input>
@@ -20,20 +20,16 @@
             <el-option label="大郭" :value="'大郭'"></el-option>
             <el-option label="小蒋" :value="'小蒋'"></el-option>
         </el-select>
-        <el-select v-model="filter.type" placeholder="荤素" style="width: 120px; margin-right: 10px;">
-            <el-option label="全部" :value="null"></el-option>
-            <el-option label="荤" :value="1"></el-option>
-            <el-option label="素" :value="2"></el-option>
-        </el-select>
+        <el-input v-model="filter.type" placeholder="分类" style="width: 150px; margin-right: 10px;"></el-input>
         <el-button type="primary" @click="loadFoods">查询</el-button>
-        <el-button type="danger" @click="randomMenu(1)">随机推荐（荤）</el-button>
-        <el-button type="success" @click="randomMenu(2)">随机推荐（素）</el-button>
+        <!--        <el-button type="danger" @click="randomMenu">随机推荐</el-button>-->
+        <!--        <el-button type="success" @click="randomMenu(2)">随机推荐（素）</el-button>-->
         <el-button type="primary" @click="openAddDialog()">新增美食</el-button>
         <el-button type="primary" @click="reset()">重置</el-button>
 
-        <el-divider></el-divider>
+                <el-divider></el-divider>
 
-        <el-divider></el-divider>
+                <el-divider></el-divider>
 
         <!-- 食谱表格 -->
         <el-table :data="foods" border style="width: 100%">
@@ -42,10 +38,10 @@
             <el-table-column prop="ingredients" label="食材"></el-table-column>
             <el-table-column prop="method" label="做法"></el-table-column>
             <el-table-column prop="cook" label="厨师"></el-table-column>
-            <el-table-column prop="type" label="荤素">
-                <template slot-scope="scope">
-                    <span>{{ scope.row.type === 1 ? '荤' : '素' }}</span>
-                </template>
+            <el-table-column prop="type" label="分类">
+                <!--                <template slot-scope="scope">-->
+                <!--                    <span>{{ scope.row.type === 1 ? '荤' : '素' }}</span>-->
+                <!--                </template>-->
             </el-table-column>
             <el-table-column prop="image" label="图片">
                 <template #default="scope">
@@ -84,30 +80,27 @@
 
     <!-- 新增对话框 -->
     <el-dialog title="新增菜谱" :visible.sync="addDialogVisible">
-        <el-form :model="addFoodData" label-width="60px">
-            <el-form-item label="菜名">
+        <el-form :model="addFoodData" :rules="rules" ref="addFoodForm" label-width="60px">
+            <el-form-item label="菜名" prop="name">
                 <el-input v-model="addFoodData.name"></el-input>
             </el-form-item>
-            <el-form-item label="简介">
+            <el-form-item label="简介" prop="introduction">
                 <el-input v-model="addFoodData.introduction"></el-input>
             </el-form-item>
-            <el-form-item label="食材">
+            <el-form-item label="食材" prop="ingredients">
                 <el-input v-model="addFoodData.ingredients"></el-input>
             </el-form-item>
-            <el-form-item label="做法">
+            <el-form-item label="做法" prop="method">
                 <el-input v-model="addFoodData.method"></el-input>
             </el-form-item>
-            <el-form-item label="厨师">
+            <el-form-item label="厨师" prop="cook">
                 <el-select v-model="addFoodData.cook" placeholder="厨师">
                     <el-option label="大郭" :value="'大郭'"></el-option>
                     <el-option label="小蒋" :value="'小蒋'"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="荤素">
-                <el-select v-model="addFoodData.type" placeholder="荤素">
-                    <el-option label="荤" :value="1"></el-option>
-                    <el-option label="素" :value="2"></el-option>
-                </el-select>
+            <el-form-item label="分类" prop="type">
+                <el-input v-model="addFoodData.type"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-upload
@@ -121,7 +114,6 @@
                 >
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-<!--                    <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
                 </el-upload>
                 <!-- 自己渲染 fileList -->
                 <div class="custom-file-list" v-if="fileList.length">
@@ -145,8 +137,8 @@
 
     <!-- 编辑对话框 -->
     <el-dialog title="编辑菜谱" :visible.sync="editDialogVisible">
-        <el-form :model="editFoodData" label-width="60px">
-            <el-form-item label="菜名">
+        <el-form :model="editFoodData" :rules="rules" ref="editFoodData" label-width="60px">
+            <el-form-item label="菜名" prop="name">
                 <el-input v-model="editFoodData.name"></el-input>
             </el-form-item>
             <el-form-item label="简介">
@@ -158,17 +150,14 @@
             <el-form-item label="做法">
                 <el-input v-model="editFoodData.method"></el-input>
             </el-form-item>
-            <el-form-item label="厨师">
+            <el-form-item label="厨师" prop="cook">
                 <el-select v-model="editFoodData.cook" placeholder="厨师">
                     <el-option label="大郭" :value="'大郭'"></el-option>
                     <el-option label="小蒋" :value="'小蒋'"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="荤素">
-                <el-select v-model="editFoodData.type" placeholder="荤素">
-                    <el-option label="荤" :value="1"></el-option>
-                    <el-option label="素" :value="2"></el-option>
-                </el-select>
+            <el-form-item label="分类" prop="type">
+                <el-input v-model="editFoodData.type"></el-input>
             </el-form-item>
             <el-form-item label="图片">
                 <template #default="scope">
@@ -191,7 +180,6 @@
                 >
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-<!--                    <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
                 </el-upload>
             </el-form-item>
         </el-form>
@@ -211,20 +199,50 @@
     }
     new Vue({
         el: '#app',
-        data: {
-            foods: [],
-            total: 0,
-            filter: {name: '', ingredients: '', cook: null, type: null, page: 1, pageSize: 10},
-            addDialogVisible: false,
-            addFoodData: {name: '', ingredients: '', introduction: '', method: '', cook: null, type: null, image: null},
-            editDialogVisible: false,
-            editFoodData: {id: null, name: '', ingredients: '', introduction: '', method: '', cook: null, type: null, image: null},
-            uploadHeaders: {
-                'Authorization': sessionStorage.getItem("token")
-            },
-            fileList: [],
-            previewVisible: false,
-            previewImage: "",
+        data() {
+            return {
+                foods: [],
+                total: 0,
+                filter: {name: '', ingredients: '', cook: null, type: '', page: 1, pageSize: 10},
+                addDialogVisible: false,
+                addFoodData: {
+                    name: '',
+                    ingredients: '',
+                    introduction: '',
+                    method: '',
+                    cook: null,
+                    type: '',
+                    image: null
+                },
+                editDialogVisible: false,
+                editFoodData: {
+                    id: null,
+                    name: '',
+                    ingredients: '',
+                    introduction: '',
+                    method: '',
+                    cook: null,
+                    type: '',
+                    image: null
+                },
+                uploadHeaders: {
+                    'Authorization': sessionStorage.getItem("token")
+                },
+                fileList: [],
+                previewVisible: false,
+                previewImage: "",
+                rules: {
+                    name: [
+                        {required: true, message: "请输入菜名", trigger: "blur"}
+                    ],
+                    cook: [
+                        {required: true, message: "请选择厨师", trigger: "change"}
+                    ],
+                    type: [
+                        {required: true, message: "请输入分类", trigger: "blur"}
+                    ]
+                }
+            }
 
         },
         created() {
@@ -272,39 +290,39 @@
 
             // 打开新增弹窗并重置表单
             openAddDialog() {
-                this.addFoodData = {name: '', ingredients: '', method: '', cook: null, type: null, url: null};
+                this.addFoodData = {name: '', ingredients: '', method: '', cook: null, type: '', url: null};
                 this.addDialogVisible = true;
             },
 
             // 新增保存
             saveAddFood() {
-                // 简单校验
-                if (!this.addFoodData.name || this.addFoodData.name.trim() === '') {
-                    this.$message.error('菜名不能为空');
-                    return;
-                }
-
-                axios.post('/menu/add', this.addFoodData, {
-                    headers: {
-                        'Authorization': sessionStorage.getItem("token"),
-                        'Content-Type': 'application/json'
+                this.$refs.addFoodForm.validate(valid => {
+                    if (!valid) {
+                        // 有未通过的校验，Element UI 会自动提示
+                        return;
                     }
-                })
-                    .then(res => {
-                        if (res.data.code === 200) {
-                            this.$message.success("添加成功");
-                            this.addDialogVisible = false;
-                            this.fileList = [];
-                            this.loadFoods();
-                        } else {
-                            this.$message.error(res.data.message);
+                    axios.post('/menu/add', this.addFoodData, {
+                        headers: {
+                            'Authorization': sessionStorage.getItem("token"),
+                            'Content-Type': 'application/json'
                         }
-
                     })
-                    .catch(err => {
-                        const msg = err.response?.data?.message || '添加失败';
-                        this.$message.error(msg);
-                    });
+                        .then(res => {
+                            if (res.data.code === 200) {
+                                this.$message.success("添加成功");
+                                this.addDialogVisible = false;
+                                this.fileList = [];
+                                this.loadFoods();
+                            } else {
+                                this.$message.error(res.data.message);
+                            }
+
+                        })
+                        .catch(err => {
+                            const msg = err.response?.data?.message || '添加失败';
+                            this.$message.error(msg);
+                        });
+                });
             },
 
             // 打开编辑弹窗（复制数据到 editFoodData）
@@ -315,54 +333,55 @@
 
             // 编辑保存
             saveEditFood() {
-                if (!this.editFoodData.name || this.editFoodData.name.trim() === '') {
-                    this.$message.error('菜名不能为空');
-                    return;
-                }
-                axios.post('/menu/edit', this.editFoodData, {
-                    headers: {
-                        'Authorization': sessionStorage.getItem("token"),
-                        'Content-Type': 'application/json'
+                this.$refs.editFoodData.validate(valid => {
+                    if (!valid) {
+                        // 有未通过的校验，Element UI 会自动提示
+                        return;
                     }
-                })
-                    .then(res => {
-                        if (res.data.code === 200) {
-                            this.$message.success("修改成功");
-                            this.editDialogVisible = false;
-                            this.loadFoods();
-                        } else {
-                            this.$message.error(res.data.message);
+                    axios.post('/menu/edit', this.editFoodData, {
+                        headers: {
+                            'Authorization': sessionStorage.getItem("token"),
+                            'Content-Type': 'application/json'
                         }
                     })
-                    .catch(err => {
-                        console.error('修改失败', err);
-                        const msg = err.response?.data?.message || '修改失败';
-                        this.$message.error(msg);
-                    });
+                        .then(res => {
+                            if (res.data.code === 200) {
+                                this.$message.success("修改成功");
+                                this.editDialogVisible = false;
+                                this.loadFoods();
+                            } else {
+                                this.$message.error(res.data.message);
+                            }
+                        })
+                        .catch(err => {
+                            console.error('修改失败', err);
+                            const msg = err.response?.data?.message || '修改失败';
+                            this.$message.error(msg);
+                        });
+                });
             },
 
             // 随机推荐
-            randomMenu(type) {
-                axios.get('/menu/random', {
-                    params: {type: type},
-                    headers: {
-                        'Authorization': sessionStorage.getItem("token"),
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(res => {
-                        if (res.data.code === 200) {
-                            this.$alert(`今日推荐：${res.data.data.name}`, '随机菜单');
-                        } else {
-                            this.$message.info("暂无食谱数据");
-                        }
-                    })
-                    .catch(err => {
-                        console.error('随机推荐失败', err);
-                        const msg = err.response?.data?.message || '请求失败';
-                        this.$message.error(msg);
-                    });
-            },
+            // randomMenu() {
+            //     axios.get('/menu/random', {
+            //         headers: {
+            //             'Authorization': sessionStorage.getItem("token"),
+            //             'Content-Type': 'application/json'
+            //         }
+            //     })
+            //         .then(res => {
+            //             if (res.data.code === 200) {
+            //                 this.$alert(`今日推荐：${res.data.data.name}`, '随机菜单');
+            //             } else {
+            //                 this.$message.info("暂无食谱数据");
+            //             }
+            //         })
+            //         .catch(err => {
+            //             console.error('随机推荐失败', err);
+            //             const msg = err.response?.data?.message || '请求失败';
+            //             this.$message.error(msg);
+            //         });
+            // },
 
             // 分页切换
             handlePageChange(newPage) {

@@ -29,9 +29,9 @@ public class Menu {
     @TableField(value = "cook")
     private String cook;
 
-    // 荤-1，素-2
+    // 分类
     @TableField(value = "type")
-    private Integer type;
+    private String type;
 
     // 图片
     @TableField(value = "image")

@@ -3,7 +3,7 @@ package org.example.entity.dto;
 import lombok.Data;
 
 @Data
-public class MenuDTO {
+public class MenuPageDTO {
 
     // 菜名
     private String name;
@@ -14,8 +14,8 @@ public class MenuDTO {
     // 厨师
     private String cook;
 
-    // 荤-1，素-2
-    private Integer type;
+    // 分类
+    private String type;
 
     private Integer page;
 

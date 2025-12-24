@@ -3,10 +3,13 @@ package org.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.dao.MenuMapper;
-import org.example.entity.entity.Menu;
-import org.example.entity.dto.MenuDTO;
 import org.example.entity.Response;
+import org.example.entity.dto.MenuAddDTO;
+import org.example.entity.dto.MenuEditDTO;
+import org.example.entity.dto.MenuPageDTO;
+import org.example.entity.entity.Menu;
 import org.example.service.MenuService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,15 +33,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     private String externalUrl;
 
     @Override
-    public Response list(MenuDTO menuDTO) {
+    public Response list(MenuPageDTO menuPageDTO) {
         List<Menu> all = this.list(new LambdaQueryWrapper<Menu>()
-                .eq(isNotBlank(menuDTO.getName()), Menu::getName, menuDTO.getName())
-                .like(isNotBlank(menuDTO.getIngredients()), Menu::getIngredients, menuDTO.getIngredients())
-                .eq(isNotBlank(menuDTO.getCook()), Menu::getCook, menuDTO.getCook())
-                .eq(menuDTO.getType() != null, Menu::getType, menuDTO.getType())
+                .eq(isNotBlank(menuPageDTO.getName()), Menu::getName, menuPageDTO.getName())
+                .like(isNotBlank(menuPageDTO.getIngredients()), Menu::getIngredients, menuPageDTO.getIngredients())
+                .eq(isNotBlank(menuPageDTO.getCook()), Menu::getCook, menuPageDTO.getCook())
+                .eq(isNotBlank(menuPageDTO.getType()), Menu::getType, menuPageDTO.getType())
         );
-        int page = menuDTO.getPage() == null ? 1 : menuDTO.getPage();
-        int size = menuDTO.getPageSize() == null ? 10 : menuDTO.getPageSize();
+        int page = menuPageDTO.getPage() == null ? 1 : menuPageDTO.getPage();
+        int size = menuPageDTO.getPageSize() == null ? 10 : menuPageDTO.getPageSize();
         int fromIndex = (page - 1) * size;
         int toIndex = Math.min(fromIndex + size, all.size());
         // 防止越界
@@ -52,16 +55,18 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public Response add(Menu menu) {
-        if (!this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getName, menu.getName())).isEmpty()) {
+    public Response add(MenuAddDTO menuAddDTO) {
+        if (!this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getName, menuAddDTO.getName())).isEmpty()) {
             return new Response(400, "已经有这个菜了！");
         }
+        Menu menu = new Menu();
+        BeanUtils.copyProperties(menuAddDTO,menu);
         return new Response(200, "success", this.save(menu));
     }
 
     @Override
-    public Response randomMenu(Integer type) {
-        List<Menu> menus = this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getType, type));
+    public Response randomMenu() {
+        List<Menu> menus = this.list(new LambdaQueryWrapper<Menu>());
         if (menus.isEmpty()) {
             return new Response(400,"没有相应菜单！");
         }
@@ -69,10 +74,12 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public Response edit(Menu menu) {
-        if (!this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getName, menu.getName()).ne(Menu::getId, menu.getId())).isEmpty()) {
+    public Response edit(MenuEditDTO menuEditDTO) {
+        if (!this.list(new LambdaQueryWrapper<Menu>().eq(Menu::getName, menuEditDTO.getName()).ne(Menu::getId, menuEditDTO.getId())).isEmpty()) {
             return new Response(400, "已经有这个菜了！");
         }
+        Menu menu = new Menu();
+        BeanUtils.copyProperties(menuEditDTO,menu);
         return new Response(200, "success", this.updateById(menu));
     }
 

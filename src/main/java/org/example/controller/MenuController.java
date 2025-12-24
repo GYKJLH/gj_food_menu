@@ -1,7 +1,8 @@
 package org.example.controller;
 
-import org.example.entity.entity.Menu;
-import org.example.entity.dto.MenuDTO;
+import org.example.entity.dto.MenuAddDTO;
+import org.example.entity.dto.MenuEditDTO;
+import org.example.entity.dto.MenuPageDTO;
 import org.example.service.MenuService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +18,23 @@ public class MenuController {
     private MenuService menuService;
 
     @GetMapping("/list")
-    public ResponseEntity<?> list(MenuDTO menuDTO) {
-        return ResponseEntity.ok(menuService.list(menuDTO));
+    public ResponseEntity<?> list(MenuPageDTO menuPageDTO) {
+        return ResponseEntity.ok(menuService.list(menuPageDTO));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody Menu menu) {
-        return ResponseEntity.ok(menuService.add(menu));
+    public ResponseEntity<?> add(@RequestBody MenuAddDTO menuAddDTO) {
+        return ResponseEntity.ok(menuService.add(menuAddDTO));
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<?> edit(@RequestBody Menu menu) {
-        return ResponseEntity.ok(menuService.edit(menu));
+    public ResponseEntity<?> edit(@RequestBody MenuEditDTO menuEditDTO) {
+        return ResponseEntity.ok(menuService.edit(menuEditDTO));
     }
 
     @GetMapping("/random")
-    public ResponseEntity<?> random(@RequestParam Integer type) {
-        return ResponseEntity.ok(menuService.randomMenu(type));
+    public ResponseEntity<?> random() {
+        return ResponseEntity.ok(menuService.randomMenu());
     }
 
     @PostMapping("/upload")
