@@ -12,10 +12,12 @@ public interface MenuForOrderConvert {
 
     @Mapping(source = "name", target = "menuName")
     @Mapping(source = "id", target = "menuId")
+    @Mapping(source = "type", target = "menuType")
     MenuForOrderVO toMenuForOrderVO(Menu menu);
 
     @Mapping(source = "name", target = "menuName")
     @Mapping(source = "id", target = "menuId")
+    @Mapping(source = "type", target = "menuType")
     List<MenuForOrderVO> toMenuForOrderVOList(List<Menu> menus);
 
 }

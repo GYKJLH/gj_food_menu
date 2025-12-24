@@ -17,6 +17,8 @@ public class MenuForOrderVO {
 
     private String menuName;
 
+    private String menuType;
+
     private String image;
 
     private String introduction;
