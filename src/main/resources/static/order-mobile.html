@@ -27,7 +27,17 @@
     <!-- 菜品 -->
     <!-- 菜品（点餐页） -->
     <div class="menu-list" v-if="activeTab === 'menu'">
-        <div class="menu-card" v-for="item in foods" :key="item.id">
+        <div class="menu-search">
+            <el-input
+                    v-model="filterName"
+                    placeholder="搜索菜名"
+                    clearable
+                    prefix-icon="el-icon-search"
+                    class="search-input"
+                    @keyup.enter.native="loadMenu()"
+            />
+        </div>
+        <div class="menu-card" v-for="item in filteredFoods" :key="item.id">
             <div class="menu-row">
                 <img class="food-img" :src="item.image">
 
@@ -75,7 +85,6 @@
     </div>
 
 
-
     <!-- 底部固定栏 -->
     <div class="bottom-bar">
 
@@ -118,6 +127,7 @@
 
     // 检查登录状态（必须放在最顶部执行）
     const token = sessionStorage.getItem('token');
+    console.log(token)
     if (!token) {
         window.location.href = '/order-login.html';
     }
@@ -132,12 +142,19 @@
                 activeTab: 'menu',
                 orderList: [],
                 addOrder: [],
+                filterName: ''
             }
         },
 
         computed: {
             totalCount() {
                 return Object.values(this.cart).reduce((a, b) => a + b, 0);
+            },
+            filteredFoods() {
+                if (!this.filterName) return this.foods
+                return this.foods.filter(item =>
+                    item.menuName.includes(this.filterName)
+                )
             }
         },
 
@@ -406,6 +423,41 @@
         font-size: 14px;
     }
 
+    .menu-search {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .search-input {
+        width: 260px;
+    }
+
+    /* 输入框整体 */
+    .search-input .el-input__inner {
+        border-radius: 20px;
+        height: 36px;
+        padding-left: 36px;
+        transition: all 0.3s ease;
+        border: 1px solid #dcdfe6;
+    }
+
+    /* 聚焦效果 */
+    .search-input .el-input__inner:focus {
+        border-color: #409EFF;
+        box-shadow: 0 0 6px rgba(64, 158, 255, 0.4);
+    }
+
+    /* 搜索图标 */
+    .search-input .el-input__prefix {
+        left: 10px;
+        color: #909399;
+    }
+
+    /* 清空按钮 */
+    .search-input .el-input__suffix {
+        right: 10px;
+    }
 
 
 </style>
