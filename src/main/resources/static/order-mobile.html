@@ -27,8 +27,8 @@
     <!-- 菜品 -->
     <div class="order-container">
 
-        <!-- 顶部搜索 -->
-        <div class="menu-search">
+        <!-- 顶部搜索（只在菜单页显示） -->
+        <div class="menu-search" v-if="activeTab === 'menu'">
             <el-input
                     v-model="filterName"
                     placeholder="搜索菜名"
@@ -38,11 +38,11 @@
             />
         </div>
 
-        <!-- 内容区：左分类 + 右菜品 -->
+        <!-- 主内容区 -->
         <div class="menu-content">
 
-            <!-- 左侧分类 -->
-            <div class="menu-type">
+            <!-- 左侧分类（仅菜单页显示） -->
+            <div class="menu-type" v-if="activeTab === 'menu'">
                 <div
                         class="type-item"
                         :class="{ active: activeType === type }"
@@ -54,64 +54,146 @@
                 </div>
             </div>
 
-            <!-- 右侧菜品 -->
-            <div class="menu-list" v-if="activeTab === 'menu'">
-                <div class="menu-card" v-for="item in filteredFoods" :key="item.id">
-                    <div class="menu-row">
-                        <img class="food-img" :src="item.image">
+            <!-- 右侧内容区 -->
+            <div class="menu-right">
 
-                        <div class="menu-info">
-                            <div class="food-name">{{ item.menuName }}</div>
-                            <div class="food-intro">{{ item.introduction }}</div>
+                <!-- 菜单页 -->
+                <div class="menu-list" v-if="activeTab === 'menu'">
+                    <div class="menu-card" v-for="item in filteredFoods" :key="item.id">
+                        <div class="menu-row">
+                            <img class="food-img" :src="item.image">
 
-                            <div class="menu-footer">
-                                <div class="count">
-                                    <button @click="changeCount(item.id, -1)">−</button>
-                                    <span>{{ cart[item.id] || 0 }}</span>
-                                    <button @click="changeCount(item.id, 1)">＋</button>
+                            <div class="menu-info">
+                                <div class="food-name">{{ item.menuName }}</div>
+                                <div class="food-intro">{{ item.introduction }}</div>
+
+                                <div class="menu-footer">
+                                    <div class="count">
+                                        <button @click="changeCount(item.id, -1)">−</button>
+                                        <span>{{ cart[item.id] || 0 }}</span>
+                                        <button @click="changeCount(item.id, 1)">＋</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
+                <!-- 订单页 -->
+                <div class="order-page" v-if="activeTab === 'orders'">
+                    <div class="order-card" v-for="item in orderList" :key="item.id">
+                        <div class="order-header">
+                            <span class="menu-name">{{ item.menuName }}</span>
+                            <span class="menu-count">x{{ item.menuCount }}</span>
+                        </div>
+
+                        <div class="order-body">
+                            <div class="order-row">
+                                <span class="label">下单人</span>
+                                <span>{{ item.orderUser }}</span>
+                            </div>
+                            <div class="order-row">
+                                <span class="label">下单时间</span>
+                                <span>{{ formatTime(item.orderTime) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="orderList.length === 0" class="empty">
+                        暂无订单
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
+    <!--    <div class="order-container">-->
 
-    <!-- 订单页 -->
-    <div class="order-page" v-if="activeTab === 'orders'">
+<!--        &lt;!&ndash; 顶部搜索 &ndash;&gt;-->
+<!--        <div class="menu-search">-->
+<!--            <el-input-->
+<!--                    v-model="filterName"-->
+<!--                    placeholder="搜索菜名"-->
+<!--                    clearable-->
+<!--                    prefix-icon="el-icon-search"-->
+<!--                    class="search-input"-->
+<!--            />-->
+<!--        </div>-->
 
-        <div class="order-card" v-for="item in orderList" :key="item.id">
-            <div class="order-header">
-                <span class="menu-name">{{ item.menuName }}</span>
-                <span class="menu-count">x{{ item.menuCount }}</span>
-            </div>
+<!--        &lt;!&ndash; 内容区：左分类 + 右菜品 &ndash;&gt;-->
+<!--        <div class="menu-content">-->
 
-            <div class="order-body">
-                <div class="order-row">
-                    <span class="label">下单人</span>
-                    <span>{{ item.orderUser }}</span>
-                </div>
-                <div class="order-row">
-                    <span class="label">下单时间</span>
-                    <span>{{ formatTime(item.orderTime) }}</span>
-                </div>
-            </div>
-        </div>
+<!--            &lt;!&ndash; 左侧分类 &ndash;&gt;-->
+<!--            <div class="menu-type">-->
+<!--                <div-->
+<!--                        class="type-item"-->
+<!--                        :class="{ active: activeType === type }"-->
+<!--                        v-for="type in typeList"-->
+<!--                        :key="type"-->
+<!--                        @click="activeType = type"-->
+<!--                >-->
+<!--                    {{ type }}-->
+<!--                </div>-->
+<!--            </div>-->
 
-        <div v-if="orderList.length === 0" class="empty">
-            暂无订单
-        </div>
+<!--            &lt;!&ndash; 右侧菜品 &ndash;&gt;-->
+<!--            <div class="menu-list" v-if="activeTab === 'menu'">-->
+<!--                <div class="menu-card" v-for="item in filteredFoods" :key="item.id">-->
+<!--                    <div class="menu-row">-->
+<!--                        <img class="food-img" :src="item.image">-->
 
-    </div>
+<!--                        <div class="menu-info">-->
+<!--                            <div class="food-name">{{ item.menuName }}</div>-->
+<!--                            <div class="food-intro">{{ item.introduction }}</div>-->
+
+<!--                            <div class="menu-footer">-->
+<!--                                <div class="count">-->
+<!--                                    <button @click="changeCount(item.id, -1)">−</button>-->
+<!--                                    <span>{{ cart[item.id] || 0 }}</span>-->
+<!--                                    <button @click="changeCount(item.id, 1)">＋</button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--        </div>-->
+<!--    </div>-->
+
+
+<!--    &lt;!&ndash; 订单页 &ndash;&gt;-->
+<!--    <div class="order-page" v-if="activeTab === 'orders'">-->
+
+<!--        <div class="order-card" v-for="item in orderList" :key="item.id">-->
+<!--            <div class="order-header">-->
+<!--                <span class="menu-name">{{ item.menuName }}</span>-->
+<!--                <span class="menu-count">x{{ item.menuCount }}</span>-->
+<!--            </div>-->
+
+<!--            <div class="order-body">-->
+<!--                <div class="order-row">-->
+<!--                    <span class="label">下单人</span>-->
+<!--                    <span>{{ item.orderUser }}</span>-->
+<!--                </div>-->
+<!--                <div class="order-row">-->
+<!--                    <span class="label">下单时间</span>-->
+<!--                    <span>{{ formatTime(item.orderTime) }}</span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div v-if="orderList.length === 0" class="empty">-->
+<!--            暂无订单-->
+<!--        </div>-->
+
+<!--    </div>-->
 
 
     <!-- 底部固定栏 -->
     <div class="bottom-bar">
 
-        <!-- 左侧 tab -->
         <div class="tab-bar">
             <div
                     class="tab-item"
@@ -138,7 +220,7 @@
                 type="danger"
                 class="submit-btn"
                 @click="submitOrder">
-            去结算
+            下单
         </el-button>
 
     </div>
@@ -488,6 +570,10 @@
         display: flex;
         flex: 1;
         overflow: hidden;
+    }
+
+    .menu-right {
+        flex: 1;
     }
 
     .search-input {
